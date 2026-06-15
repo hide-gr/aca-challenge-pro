@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ACA CHALLENGE PRO</title>
+<style>
+body{margin:0;font-family:sans-serif;background:#08090f;color:white}
+.app{max-width:520px;margin:auto;padding:18px}
+.card{background:#151923;border:1px solid #333;border-radius:22px;padding:16px;margin:14px 0}
+h1{font-size:34px;line-height:.95;margin:0}
+h1 span{color:#ff2e63}
+.sub{color:#08f7fe;font-size:13px}
+.big{font-size:44px;font-weight:900}
+button{width:100%;padding:14px;border:0;border-radius:15px;background:linear-gradient(135deg,#08f7fe,#7CFF6B);font-weight:900;font-size:16px}
+input,select,textarea{width:100%;box-sizing:border-box;margin:6px 0 12px;padding:12px;border-radius:12px;border:1px solid #444;background:#0f131d;color:white;font-size:16px}
+label{color:#aaa;font-size:13px}
+.progress{height:14px;background:#0d111a;border-radius:99px;overflow:hidden}
+#bar{height:100%;width:0%;background:linear-gradient(90deg,#08f7fe,#ff2e63)}
+.mission{display:block;background:#1f2635;padding:12px;border-radius:14px;margin:8px 0}
+.gear{background:#10151f;border:1px solid #333;border-radius:14px;padding:12px;margin:8px 0}
+.lock{opacity:.35}
+.note{color:#aaa;font-size:12px}
+</style>
+</head>
+<body>
+<div class="app">
+  <p class="sub">PENTAX × SNEAKERS × SAKURA</p>
+  <h1>ACA CHALLENGE<br><span>PRO</span></h1>
+
+  <div class="card">
+    <h2>Road to 80cm</h2>
+    <div class="big"><span id="waistNow">86.5</span> cm</div>
+    <p id="remain">あと6.5cm</p>
+    <div class="progress"><div id="bar"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>今日のミッション</h2>
+    <label class="mission"><input type="checkbox"> 睡眠6時間以上</label>
+    <label class="mission"><input type="checkbox"> タンパク質100g</label>
+    <label class="mission"><input type="checkbox"> 筋トレ15分</label>
+    <label class="mission"><input type="checkbox"> 歩数8000歩</label>
+    <label class="mission"><input type="checkbox"> 夜食なし</label>
+  </div>
+
+  <div class="card">
+    <h2>今日の記録</h2>
+    <label>体重</label>
+    <input id="weight" type="number" step="0.1" placeholder="64.5">
+    <label>ウエスト</label>
+    <input id="waist" type="number" step="0.1" placeholder="86.5">
+    <label>睡眠時間</label>
+    <input id="sleep" type="number" step="0.1" placeholder="5.0">
+    <label>食事</label>
+    <select id="food"><option>◎</option><option>○</option><option>△</option><option>×</option></select>
+    <textarea id="memo" placeholder="今日のメモ"></textarea>
+    <button onclick="save()">保存</button>
+  </div>
+
+  <div class="card">
+    <h2>AIコーチ</h2>
+    <p id="coach">今日も1つだけ勝てばOK。継続が勝ちです。</p>
+  </div>
+
+  <div class="card">
+    <h2>GEAR UNLOCK</h2>
+    <div class="gear" data-w="85">🌸👟 Air Force 1 SAKURA｜85cm</div>
+    <div class="gear" data-w="83">🎨👟 DUNK PARIS｜83cm</div>
+    <div class="gear" data-w="80">🔥👟 AJ1 CHICAGO｜80cm</div>
+    <div class="gear" data-w="78">⚡👟 Air Max 95 NEON｜78cm</div>
+  </div>
+
+  <div class="card">
+    <h2>TRAINING</h2>
+    <p>月：腕立て5回×5／懸垂限界×3／プランク45秒×3</p>
+    <p>水：スクワット20回×3／ランジ10回×3</p>
+    <p>金：懸垂限界×3／タオルローイング15回×3</p>
+    <p>日：ロードバイク20km</p>
+  </div>
+
+  <p class="note">データはこの端末のブラウザ内に保存されます。</p>
+</div>
+
+<script>
+const start=86.5, goal=80;
+function load(){
+  const d=JSON.parse(localStorage.getItem("aca")||"{}");
+  const w=d.waist||start;
+  document.getElementById("waistNow").textContent=w.toFixed(1);
+  document.getElementById("remain").textContent="あと"+Math.max(0,w-goal).toFixed(1)+"cm";
+  document.getElementById("bar").style.width=Math.max(0,Math.min(100,(start-w)/(start-goal)*100))+"%";
+  document.querySelectorAll(".gear").forEach(g=>g.classList.toggle("lock",w>Number(g.dataset.w)));
+  document.getElementById("coach").textContent=d.sleep&&d.sleep<6?"今日は筋トレより睡眠優先。6時間を目指そう。":"胸は維持。背中・肩・腹を積み上げよう。";
+}
+function save(){
+  const d={
+    weight:Number(document.getElementById("weight").value)||null,
+    waist:Number(document.getElementById("waist").value)||start,
+    sleep:Number(document.getElementById("sleep").value)||null,
+    food:document.getElementById("food").value,
+    memo:document.getElementById("memo").value
+  };
+  localStorage.setItem("aca",JSON.stringify(d));
+  load();
+  alert("保存しました！");
+}
+load();
+</script>
+</body>
+</html>
